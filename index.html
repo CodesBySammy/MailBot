@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mail Bot - Bulk Email Sender</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="container mx-auto bg-white p-8 rounded-lg shadow-md max-w-2xl">
+        <h1 class="text-2xl font-bold mb-6 text-center">Mail Bot - Bulk Email Sender</h1>
+        
+        <div class="mb-4">
+            <label class="block text-gray-700 font-bold mb-2">Upload Excel File</label>
+            <input 
+                type="file" 
+                id="excelFile" 
+                accept=".xlsx, .xls" 
+                class="w-full p-2 border rounded"
+            />
+        </div>
+
+        <div class="mb-4" id="sheetSelectContainer" style="display:none;">
+            <label class="block text-gray-700 font-bold mb-2">Select Sheet</label>
+            <select 
+                id="sheetSelect" 
+                class="w-full p-2 border rounded"
+            >
+                <option>Select Sheet</option>
+            </select>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <input 
+                type="email" 
+                id="fromEmail" 
+                placeholder="Sender Email" 
+                class="w-full p-2 border rounded"
+                required
+            >
+            <input 
+                type="password" 
+                id="appPassword" 
+                placeholder="App Password" 
+                class="w-full p-2 border rounded"
+                required
+            >
+        </div>
+
+        <div class="mb-4">
+            <input 
+                type="text" 
+                id="emailSubject" 
+                placeholder="Email Subject" 
+                class="w-full p-2 border rounded"
+                required
+            >
+        </div>
+
+        <div class="mb-4">
+            <textarea 
+                id="fixedMessage" 
+                placeholder="Plain Text Message (Optional)" 
+                class="w-full p-2 border rounded h-24"
+            ></textarea>
+        </div>
+
+        <div class="mb-4">
+            <textarea 
+                id="htmlMessage" 
+                placeholder="HTML Message (Optional)" 
+                class="w-full p-2 border rounded h-24"
+            ></textarea>
+        </div>
+
+        <div class="mb-4 overflow-x-auto">
+            <table id="excelPreview" class="w-full border-collapse">
+                <thead>
+                    <tr class="bg-gray-200">
+                        <th class="border p-2">Column Headers will appear here</th>
+                    </tr>
+                </thead>
+                <tbody id="previewBody"></tbody>
+            </table>
+        </div>
+
+        <button 
+            id="sendEmails" 
+            class="w-full bg-blue-500 text-white p-3 rounded hover:bg-blue-600 transition"
+        >
+            Send Emails
+        </button>
+
+        <div 
+            id="progressStatus" 
+            class="mt-4 text-center p-3 rounded"
+        ></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
