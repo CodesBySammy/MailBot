@@ -112,7 +112,7 @@ class MailBot {
         progressStatus.className = 'mt-4 text-center p-3 rounded bg-yellow-100';
 
         try {
-            const response = await fetch('/send-emails', {
+            const response = await fetch('https://mail-bot-be-ten.vercel.app/send-emails', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
