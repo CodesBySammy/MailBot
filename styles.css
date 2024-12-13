@@ -1,52 +1,178 @@
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f4f4;
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2ecc71;
+    --background-color: #f0f4f8;
+    --text-color: #2c3e50;
+    --border-color: #e0e6ed;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+* {
     margin: 0;
-    padding: 20px;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', 'Arial', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
     display: flex;
     justify-content: center;
+    align-items: center;
+    line-height: 1.6;
+    color: var(--text-color);
 }
 
 .container {
     background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 
+        0 10px 25px var(--shadow-color),
+        0 5px 10px rgba(0,0,0,0.05);
+    padding: 40px;
     width: 100%;
-    max-width: 600px;
+    max-width: 650px;
+    transition: transform 0.3s ease;
 }
 
-input, textarea, select {
+.container:hover {
+    transform: translateY(-5px);
+}
+
+h1 {
+    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: 25px;
+    font-weight: 700;
+    position: relative;
+}
+
+h1::after {
+    content: '';
+    position: absolute;
+    width: 70px;
+    height: 4px;
+    background: var(--secondary-color);
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 2px;
+}
+
+input, 
+textarea, 
+select {
     width: 100%;
     margin: 10px 0;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    padding: 12px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    transition: 
+        border-color 0.3s ease, 
+        box-shadow 0.3s ease;
+    font-size: 15px;
+}
+
+input:focus, 
+textarea:focus, 
+select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
 }
 
 button {
     width: 100%;
-    padding: 12px;
-    background-color: #4CAF50;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--primary-color), #2980b9);
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: 
+        transform 0.2s ease, 
+        box-shadow 0.2s ease;
+}
+
+button:hover {
+    background: linear-gradient(135deg, #2980b9, var(--primary-color));
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+button:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 #excelPreview {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
+    margin-top: 25px;
+    box-shadow: 0 5px 15px var(--shadow-color);
+    border-radius: 8px;
+    overflow: hidden;
 }
 
-#excelPreview th, #excelPreview td {
-    border: 1px solid #ddd;
-    padding: 8px;
+#excelPreview th, 
+#excelPreview td {
+    border: 1px solid var(--border-color);
+    padding: 12px;
     text-align: left;
+    transition: background-color 0.3s ease;
+}
+
+#excelPreview th {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+#excelPreview tr:nth-child(even) {
+    background-color: #f9fafb;
+}
+
+#excelPreview tr:hover {
+    background-color: #f1f3f5;
 }
 
 #progressStatus {
-    margin-top: 15px;
+    margin-top: 20px;
     text-align: center;
+    padding: 15px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+#sheetSelectContainer {
+    margin-bottom: 15px;
+}
+
+@media (max-width: 600px) {
+    .container {
+        margin: 20px;
+        padding: 25px;
+    }
+}
+
+/* Optional: Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #2980b9;
 }
