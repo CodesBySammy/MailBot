@@ -86,6 +86,7 @@ class MailBot {
         const subject = document.getElementById('emailSubject').value;
         const message = document.getElementById('fixedMessage').value;
         const htmlMessage = document.getElementById('htmlMessage').value;
+        const fromName = document.getElementById('fromName').value;
 
         const sheetName = document.getElementById('sheetSelect').value;
         const worksheet = this.workbook.Sheets[sheetName];
@@ -123,7 +124,8 @@ class MailBot {
                     subject,
                     message: message || undefined,
                     html: htmlMessage || undefined,
-                    emails: emailData
+                    emails: emailData,
+                    fromName
                 })
             });
 
