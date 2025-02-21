@@ -10,33 +10,31 @@ class MailBot {
         document.getElementById('sendEmails').addEventListener('click', this.sendEmails.bind(this));
     }
 
-    handleFileUpload(e) {
-        const file = e.target.files[0];
-        const reader = new FileReader();
+    handleFileUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
 
-        reader.onload = (event) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
             try {
-                const data = new Uint8Array(event.target.result);
-                this.workbook = XLSX.read(data, {type: 'array'});
+                const data = new Uint8Array(e.target.result);
+                this.workbook = XLSX.read(data, { type: 'array' });
 
                 const sheetSelect = document.getElementById('sheetSelect');
-                const sheetSelectContainer = document.getElementById('sheetSelectContainer');
-                
-                sheetSelect.innerHTML = '<option>Select Sheet</option>';
+                sheetSelect.innerHTML = '<option value="">Select Sheet</option>';
                 this.workbook.SheetNames.forEach(sheetName => {
                     const option = document.createElement('option');
                     option.value = sheetName;
                     option.textContent = sheetName;
                     sheetSelect.appendChild(option);
                 });
-                
-                sheetSelectContainer.style.display = 'block';
+
+                document.getElementById('sheetSelectContainer').style.display = 'block';
             } catch (error) {
                 this.showError('Error processing Excel file');
                 console.error(error);
             }
         };
-
         reader.readAsArrayBuffer(file);
     }
 
@@ -46,29 +44,25 @@ class MailBot {
 
         try {
             const worksheet = this.workbook.Sheets[sheetName];
-            const data = XLSX.utils.sheet_to_json(worksheet, { 
-                defval: '', 
-                header: 1 // Use the first row as headers
-            });
+            const data = XLSX.utils.sheet_to_json(worksheet, { defval: '', header: 1 });
+
+            if (data.length === 0) {
+                this.showError('Empty sheet. Please select a valid sheet.');
+                return;
+            }
 
             const headers = data[0];
             const previewBody = document.getElementById('previewBody');
+            const previewHeader = document.querySelector('#excelPreview thead tr');
+
+            previewHeader.innerHTML = headers.map(header => `<th class="border p-2">${header}</th>`).join('');
             previewBody.innerHTML = '';
 
-            // Update table headers dynamically
-            const previewHeader = document.querySelector('#excelPreview thead tr');
-            previewHeader.innerHTML = headers.map(header => 
-                `<th class="border p-2">${header}</th>`
-            ).join('');
-
-            // Skip the header row and render data rows
-            data.slice(1).forEach((row) => {
+            data.slice(1).forEach(row => {
                 const tr = document.createElement('tr');
-                headers.forEach(header => {
+                headers.forEach((header, index) => {
                     const td = document.createElement('td');
-                    // Find the index of the current header in the headers array
-                    const columnIndex = headers.indexOf(header);
-                    td.textContent = row[columnIndex] || 'N/A';
+                    td.textContent = row[index] || 'N/A';
                     td.className = 'border p-2';
                     tr.appendChild(td);
                 });
@@ -81,24 +75,30 @@ class MailBot {
     }
 
     async sendEmails() {
-        const fromEmail = document.getElementById('fromEmail').value;
-        const appPassword = document.getElementById('appPassword').value;
-        const subject = document.getElementById('emailSubject').value;
-        const message = document.getElementById('fixedMessage').value;
-        const htmlMessage = document.getElementById('htmlMessage').value;
-        const fromName = document.getElementById('fromName').value;
-
+        const fromEmail = document.getElementById('fromEmail').value.trim();
+        const appPassword = document.getElementById('appPassword').value.trim();
+        const subject = document.getElementById('emailSubject').value.trim();
+        const message = document.getElementById('fixedMessage').value.trim();
+        const htmlMessage = document.getElementById('htmlMessage').value.trim();
+        const fromName = document.getElementById('fromName').value.trim();
         const sheetName = document.getElementById('sheetSelect').value;
+
+        if (!fromEmail || !appPassword || !subject || !sheetName) {
+            this.showError('Please fill all required fields and select a sheet.');
+            return;
+        }
+
         const worksheet = this.workbook.Sheets[sheetName];
-        const data = XLSX.utils.sheet_to_json(worksheet, { 
-            defval: '', 
-            header: 1 // Use the first row as headers
-        });
+        const data = XLSX.utils.sheet_to_json(worksheet, { defval: '', header: 1 });
+
+        if (data.length < 2) {
+            this.showError('No recipient data found in the selected sheet.');
+            return;
+        }
 
         const headers = data[0];
         const emailData = data.slice(1).map(row => {
-            // Convert row to an object with headers as keys
-            const rowObj = {};
+            let rowObj = {};
             headers.forEach((header, index) => {
                 rowObj[header] = row[index] || '';
             });
@@ -109,15 +109,13 @@ class MailBot {
         const sendButton = document.getElementById('sendEmails');
 
         sendButton.disabled = true;
-        progressStatus.innerHTML = 'Preparing to send emails...';
+        progressStatus.innerHTML = 'Sending emails...';
         progressStatus.className = 'mt-4 text-center p-3 rounded bg-yellow-100';
 
         try {
-            const response = await fetch('https://mail-bot-be-pink.vercel.app/send-emails', {
+            const response = await fetch('http://localhost:3000/send-emails', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     fromEmail,
                     appPassword,
@@ -129,23 +127,16 @@ class MailBot {
                 })
             });
 
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
+            if (!response.ok) throw new Error('Network response was not ok');
             const result = await response.json();
 
-            if (result.summary) {
-                progressStatus.innerHTML = `
-                    Email Sending Complete:
-                    Total Emails: ${result.summary.total}
-                    Successful: ${result.summary.success}
-                    Failed: ${result.summary.failed}
-                `;
-                progressStatus.className = 'mt-4 text-center p-3 rounded bg-green-100';
-            } else {
-                progressStatus.innerHTML = result.message || 'Unknown result';
-                progressStatus.className = 'mt-4 text-center p-3 rounded bg-red-100';
-            }
+            progressStatus.innerHTML = `
+                Email Sending Complete:<br>
+                Total Emails: ${result.summary.total}<br>
+                Successful: ${result.summary.success}<br>
+                Failed: ${result.summary.failed}
+            `;
+            progressStatus.className = 'mt-4 text-center p-3 rounded bg-green-100';
         } catch (error) {
             progressStatus.innerHTML = `Error: ${error.message}`;
             progressStatus.className = 'mt-4 text-center p-3 rounded bg-red-100';
@@ -162,6 +153,4 @@ class MailBot {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    new MailBot();
-});
+document.addEventListener('DOMContentLoaded', () => new MailBot());
