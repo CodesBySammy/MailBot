@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mail Bot - Bulk Email Sender</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="mailbot.png">
@@ -12,6 +13,7 @@
     <div class="container mx-auto bg-white p-8 rounded-lg shadow-md max-w-2xl">
         <h1 class="text-2xl font-bold mb-6 text-center">Mail Bot - Bulk Email Sender</h1>
         
+        <!-- File Upload Section -->
         <div class="mb-4">
             <label class="block text-gray-700 font-bold mb-2">Upload Excel File</label>
             <input 
@@ -22,6 +24,7 @@
             />
         </div>
 
+        <!-- Sheet Selection (Hidden Until File is Uploaded) -->
         <div class="mb-4" id="sheetSelectContainer" style="display:none;">
             <label class="block text-gray-700 font-bold mb-2">Select Sheet</label>
             <select 
@@ -32,6 +35,7 @@
             </select>
         </div>
 
+        <!-- Email Credentials -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <input 
                 type="email" 
@@ -49,7 +53,8 @@
             >
         </div>
 
-         <div class="mb-4">
+        <!-- Sender Name -->
+        <div class="mb-4">
             <input 
                 type="text" 
                 id="fromName" 
@@ -58,7 +63,7 @@
             >
         </div>
 
-
+        <!-- Email Subject -->
         <div class="mb-4">
             <input 
                 type="text" 
@@ -69,6 +74,7 @@
             >
         </div>
 
+        <!-- Plain Text and HTML Message -->
         <div class="mb-4">
             <textarea 
                 id="fixedMessage" 
@@ -85,6 +91,7 @@
             ></textarea>
         </div>
 
+        <!-- Excel Data Preview -->
         <div class="mb-4 overflow-x-auto">
             <table id="excelPreview" class="w-full border-collapse">
                 <thead>
@@ -96,6 +103,7 @@
             </table>
         </div>
 
+        <!-- Send Emails Button -->
         <button 
             id="sendEmails" 
             class="w-full bg-blue-500 text-white p-3 rounded hover:bg-blue-600 transition"
@@ -103,6 +111,7 @@
             Send Emails
         </button>
 
+        <!-- Progress Status -->
         <div 
             id="progressStatus" 
             class="mt-4 text-center p-3 rounded"
